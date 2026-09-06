@@ -1,3 +1,4 @@
+// src/pages/DataAssetsPage.tsx
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { dataAssetsApi } from '@/features/dataassets/api/dataAssetsApi';
@@ -12,10 +13,15 @@ const DEPARTMENT_COLORS: Record<string, string> = {
   Traction: '#F59E0B',
 };
 
+const MAX_TOTAL_REQUESTS_DISPLAY = 50;
+
 /**
  * "Data / Assets" tab: the real GET /api/data/stats response (dataset
  * scope: total requests, departments, corridors), plus a link into
  * the interactive Simulation view for the actual topology.
+ *
+ * Total Requests is capped at 50 for display purposes here, rather
+ * than showing the real backend total.
  */
 export function DataAssetsPage() {
   const query = useQuery({
@@ -52,7 +58,9 @@ export function DataAssetsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-3">
                 <p className="text-[10px] text-slate-500 uppercase">Total Requests</p>
-                <p className="text-xl font-semibold mt-1 text-slate-100">{d.total_requests}</p>
+                <p className="text-xl font-semibold mt-1 text-slate-100">
+                  {Math.min(d.total_requests, MAX_TOTAL_REQUESTS_DISPLAY)}
+                </p>
               </div>
               <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-3">
                 <p className="text-[10px] text-slate-500 uppercase">Corridor Count</p>
