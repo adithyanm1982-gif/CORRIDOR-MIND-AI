@@ -1,3 +1,4 @@
+// src/features/requests/local/RaiseRequestForm.tsx
 import { useState } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useLocalRequestStore } from './localRequestStore';
@@ -18,7 +19,7 @@ const MAINTENANCE_TYPES_BY_DEPT: Record<string, string[]> = {
 
 const CORRIDORS = ['C01', 'C02', 'C03', 'C04'];
 const URGENCIES: Urgency[] = ['IMMEDIATE', 'HIGH', 'MEDIUM', 'NORMAL', 'LOW'];
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DEFAULT_PREFERRED_DAY = 'Monday';
 
 /**
  * Raise-request form for Engineering/S&T/Traction logins. Department
@@ -27,6 +28,9 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
  * no create endpoint, so this is fully client-side, and immediately
  * visible to the Controller's Requests and Approvals tabs since they
  * read from the same store.
+ *
+ * Preferred Day is no longer user-selectable; every request is
+ * submitted with a fixed default day.
  */
 export function RaiseRequestForm() {
   const { user } = useAuth();
@@ -42,7 +46,6 @@ export function RaiseRequestForm() {
   const [corridorId, setCorridorId] = useState(CORRIDORS[0]);
   const [durationMinutes, setDurationMinutes] = useState(120);
   const [urgency, setUrgency] = useState<Urgency>('MEDIUM');
-  const [preferredDay, setPreferredDay] = useState(DAYS[0]);
   const [submitted, setSubmitted] = useState(false);
 
   if (!department) {
@@ -60,7 +63,7 @@ export function RaiseRequestForm() {
       corridor_id: corridorId,
       estimated_duration_hours: durationMinutes / 60,
       urgency,
-      preferred_day: preferredDay,
+      preferred_day: DEFAULT_PREFERRED_DAY,
     });
     setSubmitted(true);
     setIssue('');
@@ -149,21 +152,6 @@ export function RaiseRequestForm() {
             {URGENCIES.map((u) => (
               <option key={u} value={u}>
                 {u}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-xs text-slate-400">Preferred Day</label>
-          <select
-            value={preferredDay}
-            onChange={(e) => setPreferredDay(e.target.value)}
-            className="w-full rounded-md bg-slate-900/60 border border-slate-700 px-3 py-2 text-sm"
-          >
-            {DAYS.map((d) => (
-              <option key={d} value={d}>
-                {d}
               </option>
             ))}
           </select>
