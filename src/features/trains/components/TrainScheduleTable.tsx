@@ -1,101 +1,171 @@
-import { useState } from 'react';
+// src/features/trains/components/TrainScheduleTable.tsx
+import { useMemo, useState } from 'react';
 import { RealTrainMovement } from '@/shared/types/railsyncReal';
-import { Badge } from '@/shared/components/ui/Badge';
 
-const DIRECTION_COLORS: Record<string, string> = {
-  UP: '#22D3EE',
-  DOWN: '#FBBF24',
-};
+const DAYS_ORDER = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MAX_PER_DAY = 8; // representative sample, not the full dataset
+const MAX_PER_CELL = 2;
 
-const STATUS_COLORS: Record<string, string> = {
-  SCHEDULED: '#38BDF8',
-  RUNNING: '#22C55E',
-  DELAYED: '#F59E0B',
-  CANCELLED: '#F43F5E',
-};
+type TimeFormat = '24h' | 'ampm';
 
-const PAGE_SIZE = 20;
+function parseMinutes(t: string): number {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + (m || 0);
+}
 
-/** Table for the real train_movements dataset -- train no/type, real entry/exit times, corridor, direction, status. */
+function formatHour(hour: number, format: TimeFormat): string {
+  if (format === '24h') return `${String(hour).padStart(2, '0')}:00`;
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const h12 = hour % 12 === 0 ? 12 : hour % 12;
+  return `${h12}:00 ${period}`;
+}
+
+function formatTime(t: string, format: TimeFormat): string {
+  const mins = parseMinutes(t);
+  const h = Math.floor(mins / 60) % 24;
+  const m = mins % 60;
+  if (format === '24h') return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(m).padStart(2, '0')}${period}`;
+}
+
+/** Evenly samples up to `max` entries across the sorted list, so the picks span the full day rather than clustering. */
+function sampleEvenly<T>(items: T[], max: number): T[] {
+  if (items.length <= max) return items;
+  const step = items.length / max;
+  const out: T[] = [];
+  for (let i = 0; i < max; i++) {
+    out.push(items[Math.floor(i * step)]);
+  }
+  return out;
+}
+
 export function TrainScheduleTable({ trains = [] }: { trains?: RealTrainMovement[] }) {
-  const [page, setPage] = useState(0);
+  const [format, setFormat] = useState<TimeFormat>('24h');
+
+  const { byDayHour, hourRange, totalShown } = useMemo(() => {
+    const byDay: Record<string, RealTrainMovement[]> = {};
+    DAYS_ORDER.forEach((d) => (byDay[d] = []));
+    for (const t of trains) {
+      if (byDay[t.day]) byDay[t.day].push(t);
+    }
+
+    const sampledByDay: Record<string, RealTrainMovement[]> = {};
+    let shown = 0;
+    for (const day of DAYS_ORDER) {
+      const sorted = [...byDay[day]].sort((a, b) => a.entry_time.localeCompare(b.entry_time));
+      const sample = sampleEvenly(sorted, MAX_PER_DAY);
+      sampledByDay[day] = sample;
+      shown += sample.length;
+    }
+
+    // Bucket sampled entries by hour, and find the active hour range so we don't render dead rows.
+    const byDayHour: Record<string, Record<number, RealTrainMovement[]>> = {};
+    let minHour = 23;
+    let maxHour = 0;
+    DAYS_ORDER.forEach((day) => {
+      byDayHour[day] = {};
+      for (const t of sampledByDay[day]) {
+        const hour = Math.floor(parseMinutes(t.entry_time) / 60);
+        if (!byDayHour[day][hour]) byDayHour[day][hour] = [];
+        byDayHour[day][hour].push(t);
+        minHour = Math.min(minHour, hour);
+        maxHour = Math.max(maxHour, hour);
+      }
+    });
+
+    if (shown === 0) {
+      minHour = 5;
+      maxHour = 22;
+    }
+
+    return { byDayHour, hourRange: { min: minHour, max: maxHour }, totalShown: shown };
+  }, [trains]);
 
   if (trains.length === 0) {
     return <p className="text-sm text-slate-500 py-6 text-center">No train movements for this filter.</p>;
   }
 
-  const sorted = [...trains].sort((a, b) => a.entry_time.localeCompare(b.entry_time));
-  const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
-  const pageItems = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const hours = Array.from({ length: hourRange.max - hourRange.min + 1 }, (_, i) => hourRange.min + i);
 
   return (
-    <div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-slate-500">
+          Showing {totalShown} representative departures of {trains.length} total
+        </p>
+        <div className="inline-flex rounded-md border border-slate-700 overflow-hidden text-[10px]">
+          <button
+            onClick={() => setFormat('24h')}
+            className={`px-2 py-1 ${format === '24h' ? 'bg-slate-700 text-slate-100' : 'bg-slate-900/50 text-slate-500'}`}
+          >
+            24h
+          </button>
+          <button
+            onClick={() => setFormat('ampm')}
+            className={`px-2 py-1 ${format === 'ampm' ? 'bg-slate-700 text-slate-100' : 'bg-slate-900/50 text-slate-500'}`}
+          >
+            AM/PM
+          </button>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto rounded-lg border border-slate-800">
+        <table className="w-full border-collapse text-xs">
           <thead>
-            <tr className="text-left text-xs text-slate-500 border-b border-slate-800">
-              <th className="py-2 pr-3">Train</th>
-              <th className="py-2 pr-3">Day</th>
-              <th className="py-2 pr-3">Route</th>
-              <th className="py-2 pr-3">Entry → Exit</th>
-              <th className="py-2 pr-3">Direction</th>
-              <th className="py-2 pr-3">Status</th>
-              <th className="py-2 pr-3">Line</th>
+            <tr>
+              <th className="w-16 border-b border-r border-slate-800 bg-slate-900/60 p-2" />
+              {DAYS_ORDER.map((day) => (
+                <th
+                  key={day}
+                  className="border-b border-r border-slate-800 bg-slate-900/60 p-2 text-center font-medium text-slate-300 last:border-r-0"
+                >
+                  {day.slice(0, 3)}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {pageItems.map((t) => (
-              <tr key={t.movement_id} className="border-b border-slate-800/60 hover:bg-slate-900/40">
-                <td className="py-2 pr-3">
-                  <p className="text-slate-200 font-mono">#{t.train_no}</p>
-                  <p className="text-xs text-slate-500">{t.train_type}</p>
+            {hours.map((hour) => (
+              <tr key={hour}>
+                <td className="border-b border-r border-slate-800 bg-slate-900/30 p-2 text-right align-top text-[10px] text-slate-500 whitespace-nowrap">
+                  {formatHour(hour, format)}
                 </td>
-                <td className="py-2 pr-3 text-slate-400">{t.day}</td>
-                <td className="py-2 pr-3 text-slate-300">
-                  {t.from_station} → {t.to_station}
-                  <p className="text-[10px] text-slate-500">
-                    {t.corridor_id} / {t.subsection_id}
-                  </p>
-                </td>
-                <td className="py-2 pr-3 text-slate-300 font-mono text-xs">
-                  {t.entry_time} → {t.exit_time}
-                </td>
-                <td className="py-2 pr-3">
-                  <Badge color={DIRECTION_COLORS[t.direction] ?? '#94A3B8'}>{t.direction}</Badge>
-                </td>
-                <td className="py-2 pr-3">
-                  <Badge color={STATUS_COLORS[t.movement_status] ?? '#94A3B8'}>{t.movement_status}</Badge>
-                </td>
-                <td className="py-2 pr-3 text-slate-500 text-xs">{t.line_id}</td>
+                {DAYS_ORDER.map((day) => {
+                  const entries = byDayHour[day][hour] ?? [];
+                  const visible = entries.slice(0, MAX_PER_CELL);
+                  const overflow = entries.length - visible.length;
+                  return (
+                    <td key={day} className="border-b border-r border-slate-800 p-1.5 align-top last:border-r-0">
+                      <div className="flex flex-col gap-1">
+                        {visible.map((t) => (
+                          <div
+                            key={t.movement_id}
+                            title={`${t.from_station} → ${t.to_station} · ${t.corridor_id}/${t.subsection_id} · ${t.movement_status}`}
+                            className="rounded border border-slate-700 bg-slate-900/50 px-1.5 py-1"
+                          >
+                            <p className="text-slate-200 font-medium truncate">
+                              #{t.train_no} <span className="text-slate-500">{t.direction === 'UP' ? '↑' : '↓'}</span>
+                            </p>
+                            <p className="text-[10px] text-slate-500 truncate">
+                              {t.from_station}→{t.to_station}
+                            </p>
+                            <p className="text-[10px] text-slate-500">{formatTime(t.entry_time, format)}</p>
+                          </div>
+                        ))}
+                        {overflow > 0 && (
+                          <p className="text-[10px] text-slate-600 pl-1">+{overflow} more</p>
+                        )}
+                      </div>
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-3 text-xs text-slate-400">
-          <span>
-            {trains.length} movements · Page {page + 1} of {totalPages}
-          </span>
-          <div className="flex gap-1.5">
-            <button
-              disabled={page === 0}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              className="rounded-md border border-slate-700 px-2 py-1 disabled:opacity-30"
-            >
-              Prev
-            </button>
-            <button
-              disabled={page >= totalPages - 1}
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              className="rounded-md border border-slate-700 px-2 py-1 disabled:opacity-30"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

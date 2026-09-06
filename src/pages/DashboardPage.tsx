@@ -1,3 +1,4 @@
+// src/pages/DashboardPage.tsx
 import { useState } from 'react';
 import { useDashboardSummary } from '@/features/dashboard/hooks/useDashboardSummary';
 import { useTrains } from '@/features/trains/hooks/useTrains';
@@ -17,8 +18,6 @@ function KpiCard({ label, value, accent }: { label: string; value: string | numb
   );
 }
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
 /**
  * "Dashboard" tab, sourced from the real GET /api/dashboard/summary
  * (backend/app/api/dashboard.py) -- every field below is confirmed
@@ -31,14 +30,17 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
  * This panel is built and ready now, so it starts working with zero
  * frontend changes the moment that route goes live -- until then it
  * shows the same loading/error state as any other live-data panel.
+ *
+ * Train Schedule panel renders as a full Sun-Sat weekly timetable grid
+ * (see TrainScheduleTable) rather than a paginated list, so it now
+ * fetches the whole week at once instead of filtering by a single day.
  */
 export function DashboardPage() {
   const [planningDate, setPlanningDate] = useState('2026-08-25');
   const [corridorId, setCorridorId] = useState('');
-  const [trainDay, setTrainDay] = useState('Monday');
 
   const query = useDashboardSummary({ planning_date: planningDate, corridor_id: corridorId || undefined });
-  const trainsQuery = useTrains({ day: trainDay, corridor_id: corridorId || undefined });
+  const trainsQuery = useTrains({ corridor_id: corridorId || undefined });
   const d = query.data;
 
   return (
@@ -110,23 +112,6 @@ export function DashboardPage() {
           </CardTitle>
         </CardHeader>
         <div className="space-y-3">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="space-y-1">
-              <label className="text-[10px] text-slate-500 uppercase tracking-wide">Day</label>
-              <select
-                value={trainDay}
-                onChange={(e) => setTrainDay(e.target.value)}
-                className="rounded-md bg-slate-900/60 border border-slate-700 px-2.5 py-1.5 text-xs"
-              >
-                {DAYS.map((day) => (
-                  <option key={day} value={day}>
-                    {day}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
           {trainsQuery.isLoading && (
             <div className="flex items-center gap-2 py-8 text-sm text-slate-500">
               <RefreshCw size={14} className="animate-spin" />
