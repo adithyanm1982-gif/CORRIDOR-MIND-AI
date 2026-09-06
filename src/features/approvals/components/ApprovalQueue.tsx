@@ -66,7 +66,7 @@ export function ApprovalCard({ task }: ApprovalCardProps) {
         </div>
         <div>
           <p className="text-slate-500">Est. Duration</p>
-          <p className="text-slate-300">{task.estimated_duration_hours}h</p>
+          <p className="text-slate-300">{Math.round(task.estimated_duration_hours * 60)} min</p>
         </div>
         <div>
           <p className="text-slate-500">Priority</p>

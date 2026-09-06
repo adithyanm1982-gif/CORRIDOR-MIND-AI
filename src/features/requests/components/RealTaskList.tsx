@@ -74,7 +74,7 @@ export function RealTaskList({ tasks }: { tasks: RealTask[] }) {
                   <Badge color={URGENCY_COLORS[t.urgency]}>{t.urgency}</Badge>
                 </td>
                 <td className="py-2 pr-3 text-slate-400">{t.overdue_days}d</td>
-                <td className="py-2 pr-3 text-slate-400">{t.estimated_duration_hours}h</td>
+                <td className="py-2 pr-3 text-slate-400">{Math.round(t.estimated_duration_hours * 60)} min</td>
                 <td className="py-2 pr-3 text-slate-500 text-xs">{t.planning_type}</td>
               </tr>
             ))}

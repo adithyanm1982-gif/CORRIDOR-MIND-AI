@@ -40,8 +40,7 @@ export function RaiseRequestForm() {
   const [maintenanceType, setMaintenanceType] = useState(maintenanceTypes[0] ?? '');
   const [issue, setIssue] = useState('');
   const [corridorId, setCorridorId] = useState(CORRIDORS[0]);
-  const [durationHoursPart, setDurationHoursPart] = useState(2);
-  const [durationMinutesPart, setDurationMinutesPart] = useState(0);
+  const [durationMinutes, setDurationMinutes] = useState(120);
   const [urgency, setUrgency] = useState<Urgency>('MEDIUM');
   const [preferredDay, setPreferredDay] = useState(DAYS[0]);
   const [submitted, setSubmitted] = useState(false);
@@ -52,14 +51,14 @@ export function RaiseRequestForm() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (durationHoursPart + durationMinutesPart <= 0) return;
+    if (durationMinutes <= 0) return;
     raiseRequest({
       department: department!,
       asset_type: assetType,
       maintenance_type: maintenanceType,
       issue: issue || `Routine ${maintenanceType.toLowerCase()}`,
       corridor_id: corridorId,
-      estimated_duration_hours: durationHoursPart + durationMinutesPart / 60,
+      estimated_duration_hours: durationMinutes / 60,
       urgency,
       preferred_day: preferredDay,
     });
@@ -128,33 +127,16 @@ export function RaiseRequestForm() {
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs text-slate-400">Estimated Duration</label>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <input
-                type="number"
-                min={0}
-                max={24}
-                step={1}
-                value={durationHoursPart}
-                onChange={(e) => setDurationHoursPart(Math.max(0, Number(e.target.value)))}
-                className="w-full rounded-md bg-slate-900/60 border border-slate-700 px-3 py-2 text-sm"
-              />
-              <p className="text-[10px] text-slate-500 mt-0.5">Hours</p>
-            </div>
-            <div className="flex-1">
-              <input
-                type="number"
-                min={0}
-                max={59}
-                step={5}
-                value={durationMinutesPart}
-                onChange={(e) => setDurationMinutesPart(Math.min(59, Math.max(0, Number(e.target.value))))}
-                className="w-full rounded-md bg-slate-900/60 border border-slate-700 px-3 py-2 text-sm"
-              />
-              <p className="text-[10px] text-slate-500 mt-0.5">Minutes</p>
-            </div>
-          </div>
+          <label className="text-xs text-slate-400">Estimated Duration (minutes)</label>
+          <input
+            type="number"
+            min={5}
+            max={1440}
+            step={5}
+            value={durationMinutes}
+            onChange={(e) => setDurationMinutes(Math.max(0, Number(e.target.value)))}
+            className="w-full rounded-md bg-slate-900/60 border border-slate-700 px-3 py-2 text-sm"
+          />
         </div>
 
         <div className="space-y-1">
