@@ -1,3 +1,4 @@
+// src/pages/PrioritiesPage.tsx
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -12,6 +13,7 @@ import { Card, CardHeader, CardTitle } from '@/shared/components/ui/Card';
 type ClassFilter = PriorityClass | 'ALL';
 
 const FILTERS: ClassFilter[] = ['ALL', 'Critical', 'High', 'Medium', 'Low'];
+const MAX_REQUESTS = 50;
 
 /**
  * "Priorities" tab: the real GET /api/priorities/ feed, already
@@ -23,6 +25,9 @@ const FILTERS: ClassFilter[] = ['ALL', 'Critical', 'High', 'Medium', 'Low'];
  * (Critical/High/Medium/Low) -- without it, Medium and Low items were
  * effectively unreachable whenever there were 50+ Critical/High items
  * ranked ahead of them in one long list.
+ *
+ * Capped to the top 50 highest-scored requests overall (the backend
+ * already returns them sorted high->low), rather than the full feed.
  */
 export function PrioritiesPage() {
   const [planningDate, setPlanningDate] = useState('2026-08-25');
@@ -35,7 +40,7 @@ export function PrioritiesPage() {
     retry: 1,
   });
 
-  const allRequests = query.data?.requests ?? [];
+  const allRequests = (query.data?.requests ?? []).slice(0, MAX_REQUESTS);
 
   const counts = useMemo(() => {
     const c: Record<ClassFilter, number> = { ALL: allRequests.length, Critical: 0, High: 0, Medium: 0, Low: 0 };
@@ -48,7 +53,7 @@ export function PrioritiesPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Priority Ranking {query.data ? `(${query.data.count})` : ''}</CardTitle>
+        <CardTitle>AI Priority Ranking {query.data ? `(${allRequests.length})` : ''}</CardTitle>
       </CardHeader>
       <div className="space-y-3">
         <p className="text-xs text-slate-500">

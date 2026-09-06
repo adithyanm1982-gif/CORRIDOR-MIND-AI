@@ -1,13 +1,5 @@
+// src/features/prioritization/components/PriorityBreakdownChart.tsx
 import { realPriorityBreakdown, RealPriorityInputs } from '../utils/scoreFormatting';
-
-const COMPONENT_COLORS: Record<string, string> = {
-  safety_risk: '#F43F5E',
-  criticality: '#F59E0B',
-  operational_impact: '#38BDF8',
-  severity: '#A78BFA',
-  urgency: '#22D3EE',
-  overdue: '#22C55E',
-};
 
 const COMPONENT_LABELS: Record<string, string> = {
   safety_risk: 'Safety Risk (25%)',
@@ -21,6 +13,7 @@ const COMPONENT_LABELS: Record<string, string> = {
 /**
  * Six-factor weighted breakdown matching the real backend priority
  * engine exactly (see features/prioritization/utils/scoreFormatting.ts).
+ * Bars are rendered plain white rather than per-factor colors.
  */
 export function PriorityBreakdownChart({ input }: { input: RealPriorityInputs }) {
   const breakdown = realPriorityBreakdown(input);
@@ -38,7 +31,7 @@ export function PriorityBreakdownChart({ input }: { input: RealPriorityInputs })
           <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
             <div
               className="h-full rounded-full"
-              style={{ width: `${(value / max) * 100}%`, backgroundColor: COMPONENT_COLORS[key] }}
+              style={{ width: `${(value / max) * 100}%`, backgroundColor: '#FFFFFF' }}
             />
           </div>
         </div>
