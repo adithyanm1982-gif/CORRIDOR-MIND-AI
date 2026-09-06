@@ -1,15 +1,39 @@
-import { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
+
+type Theme = 'dark' | 'light';
+
+interface ThemeContextValue {
+  theme: Theme;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+const STORAGE_KEY = 'corridor-mind-theme';
 
 /**
- * RailSync is dark-mode-only per the simulation design spec
- * (canvas background #090D16 / #0B0F19). This provider just guarantees
- * the class is present at the document root; it's a seam for adding
- * a light/high-contrast theme later without touching every component.
+ * Provides light/dark theme state, applied as a class ('dark' | 'light')
+ * on <html>. Persisted to localStorage so the choice survives reloads.
+ * Defaults to dark, matching RailSync's original dark-only design.
  */
 export function ThemeProvider({ children }: PropsWithChildren) {
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-  }, []);
+  const [theme, setTheme] = useState<Theme>(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored === 'light' ? 'light' : 'dark';
+  });
 
-  return <>{children}</>;
+  useEffect(() => {
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add(theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
+}
+
+export function useTheme() {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
+  return ctx;
 }

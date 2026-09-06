@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { UserRole } from '@/features/auth/types';
 import { NotificationBell } from './NotificationBell';
+import { ThemeToggle } from '@/shared/components/ui/ThemeToggle';
 
 interface NavItem {
   to: string;
@@ -20,7 +21,7 @@ const NAV_ITEMS: NavItem[] = [
 
   { to: '/planning', label: 'Planning' },
   { to: '/schedules', label: 'Schedules', onlyForRoles: ['CONTROLLER'] }, // Only the Section Controller can view it
-  
+
   { to: '/conflicts-safety', label: 'Conflicts & Safety' },
   { to: '/coordination', label: 'Coordination' },
   // Only the Section Controller approves/rejects requests -- Engineering/
@@ -69,6 +70,7 @@ export function Navbar() {
       {user && (
         <div className="flex items-center gap-3 text-xs text-slate-400">
           {user.role === 'CONTROLLER' && <NotificationBell />}
+          <ThemeToggle />
           <span>
             {user.name} · <span className="text-slate-300">{user.role}</span>
           </span>

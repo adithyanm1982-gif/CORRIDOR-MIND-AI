@@ -38,3 +38,58 @@ body {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(148, 163, 184, 0.12);
 }
+
+/* ---------- Light mode overrides ---------- */
+/* Global remaps of the slate/canvas utility classes used throughout
+   the app, so light mode works without editing every page file. */
+
+.light body,
+.light #root {
+  background-color: #ffffff;
+}
+
+.light .bg-canvas {
+  background-color: #ffffff !important;
+}
+.light [class*="bg-canvas-panel"] {
+  background-color: #f8fafc !important;
+}
+
+.light [class*="bg-slate-950"],
+.light [class*="bg-slate-900"],
+.light [class*="bg-slate-800"] {
+  background-color: #ffffff !important;
+}
+
+.light [class*="border-slate-800"],
+.light [class*="border-slate-700"] {
+  border-color: #d1d5db !important;
+}
+
+.light [class*="text-slate-100"],
+.light [class*="text-slate-200"],
+.light [class*="text-slate-300"] {
+  color: #000000 !important;
+}
+
+.light [class*="text-slate-400"],
+.light [class*="text-slate-500"] {
+  color: #374151 !important;
+}
+
+.light [class*="text-slate-600"],
+.light [class*="text-slate-700"] {
+  color: #1f2937 !important;
+}
+
+.light .panel-surface {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
