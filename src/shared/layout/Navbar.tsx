@@ -18,7 +18,8 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/requests', label: 'Requests' },
   { to: '/priorities', label: 'Priorities' },
   { to: '/planning', label: 'Planning' },
-  { to: '/schedules', label: 'Schedules' },
+  { to: '/schedules', label: 'Schedules', onlyForRoles: ['CONTROLLER'] },
+  
   { to: '/conflicts-safety', label: 'Conflicts & Safety' },
   { to: '/coordination', label: 'Coordination' },
   // Only the Section Controller approves/rejects requests -- Engineering/
