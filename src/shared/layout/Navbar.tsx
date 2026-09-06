@@ -17,6 +17,8 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/requests', label: 'Requests' },
   { to: '/priorities', label: 'Priorities' },
+  { to: '/priorities', label: 'Priorities', onlyForRoles: ['CONTROLLER'] },
+
   { to: '/planning', label: 'Planning' },
   { to: '/schedules', label: 'Schedules', onlyForRoles: ['CONTROLLER'] },
   
