@@ -46,7 +46,7 @@ export function Navbar() {
     <nav className="flex items-center justify-between border-b border-slate-800 bg-canvas-panel px-4 py-2.5">
       <div className="flex items-center gap-6">
         <span className="text-sm font-bold tracking-wide text-slate-100">
-          RAIL<span className="text-dept-engineering">SYNC</span>
+          CORRIDOR <span className="text-dept-engineering">MIND AI</span>
         </span>
         <div className="flex gap-1 flex-wrap">
           {visibleItems.map((item) => (
