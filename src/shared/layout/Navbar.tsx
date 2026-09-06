@@ -16,11 +16,10 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/requests', label: 'Requests' },
-  { to: '/priorities', label: 'Priorities' },
-  { to: '/priorities', label: 'Priorities', onlyForRoles: ['CONTROLLER'] },
+  { to: '/priorities', label: 'Priorities', onlyForRoles: ['CONTROLLER'] }, // Only the Section Controller can view it
 
   { to: '/planning', label: 'Planning' },
-  { to: '/schedules', label: 'Schedules', onlyForRoles: ['CONTROLLER'] },
+  { to: '/schedules', label: 'Schedules', onlyForRoles: ['CONTROLLER'] }, // Only the Section Controller can view it
   
   { to: '/conflicts-safety', label: 'Conflicts & Safety' },
   { to: '/coordination', label: 'Coordination' },
