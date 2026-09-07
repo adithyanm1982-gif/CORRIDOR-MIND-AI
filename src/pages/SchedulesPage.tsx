@@ -27,7 +27,7 @@ export function SchedulesPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Final Recommended Schedules {query.data ? `(${query.data.count})` : ''}</CardTitle>
+        <CardTitle>Final Recommended Schedules</CardTitle>
       </CardHeader>
       <div className="space-y-3">
         <div className="flex flex-wrap items-end gap-3">

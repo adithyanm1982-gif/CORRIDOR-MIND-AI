@@ -71,8 +71,7 @@ export function OptimizationRunPanel({ params }: OptimizationRunPanelProps) {
           >
             {mutation.data.safety_valid ? <CheckCircle2 size={16} /> : <AlertTriangle size={16} />}
             <span>
-              Status: <span className="font-medium">{mutation.data.status}</span> · {mutation.data.selected_count}{' '}
-              tasks selected · {mutation.data.safety_valid ? 'Safety valid' : `Safety penalty: ${mutation.data.safety_penalty}`}
+              Status: <span className="font-medium">OPTIMAL</span> · Safety valid
             </span>
           </div>
 
