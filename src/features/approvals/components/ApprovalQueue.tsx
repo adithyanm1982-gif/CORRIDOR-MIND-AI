@@ -1,9 +1,12 @@
+// src/features/approvals/components/ApprovalQueue.tsx
 import { useState } from 'react';
 import { RealTask } from '@/shared/types/railsyncReal';
 import { ApprovalActions } from './ApprovalActions';
 import { Badge } from '@/shared/components/ui/Badge';
 import { computeRealPriorityScore, classifyRealPriority, priorityInputsFromTask } from '@/features/prioritization/utils/scoreFormatting';
 import { PriorityBadge } from '@/features/prioritization/components/PriorityBadge';
+import { AIExplainModal } from './AIExplainModal';
+import { Sparkles } from 'lucide-react';
 
 const DEPARTMENT_COLORS: Record<string, string> = {
   Engineering: '#38BDF8',
@@ -33,9 +36,15 @@ interface ApprovalCardProps {
  * controller_status='PENDING_REVIEW') as if they were two different
  * things needing separate attention. They aren't; approving here
  * resolves both.
+ *
+ * The "AI Explainable" button opens AIExplainModal as an anchored
+ * popover directly below itself (not a full-screen modal) -- the
+ * `relative` wrapper around the button is what the popover positions
+ * against.
  */
 export function ApprovalCard({ task }: ApprovalCardProps) {
   const [decision, setDecision] = useState<'APPROVED' | 'REJECTED' | null>(null);
+  const [showExplain, setShowExplain] = useState(false);
   const score = computeRealPriorityScore(priorityInputsFromTask(task));
   const priorityClass = classifyRealPriority(score);
 
@@ -74,6 +83,18 @@ export function ApprovalCard({ task }: ApprovalCardProps) {
         </div>
       </div>
 
+      <div className="relative inline-block">
+        <button
+          onClick={() => setShowExplain((v) => !v)}
+          className="flex items-center gap-1.5 text-xs text-dept-engineering hover:underline"
+        >
+          <Sparkles size={12} />
+          AI Explainable
+        </button>
+
+        <AIExplainModal task={task} open={showExplain} onClose={() => setShowExplain(false)} />
+      </div>
+
       {decision ? (
         <p className={decision === 'APPROVED' ? 'text-xs text-signal-green' : 'text-xs text-dept-snt'}>
           {decision === 'APPROVED' ? 'Approved.' : 'Rejected.'}
@@ -93,7 +114,6 @@ export function ApprovalQueue({ tasks, sortBy = 'priority' }: { tasks: RealTask[
   const sorted = [...tasks].sort((a, b) => {
     if (sortBy === 'urgency') return URGENCY_RANK[a.urgency] - URGENCY_RANK[b.urgency];
     if (sortBy === 'overdue') return b.overdue_days - a.overdue_days;
-    // 'priority' -- highest priority score first, using the same real formula as the Priorities tab
     const scoreA = computeRealPriorityScore(priorityInputsFromTask(a));
     const scoreB = computeRealPriorityScore(priorityInputsFromTask(b));
     return scoreB - scoreA;
