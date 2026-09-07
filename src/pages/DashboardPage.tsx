@@ -71,7 +71,7 @@ export function DashboardPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CalendarClock size={16} />
-            Weekly Block Schedule {schedulesQuery.data ? `(${schedulesQuery.data.count})` : ''}
+            Weekly Block Schedule
           </CardTitle>
         </CardHeader>
         <div className="space-y-3">
