@@ -1,4 +1,5 @@
 // src/shared/layout/Navbar.tsx
+
 import { NavLink } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -20,9 +21,12 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/requests', label: 'Requests' },
   { to: '/priorities', label: 'Priorities' },
   { to: '/planning', label: 'Planning' },
-  { to: '/schedules', label: 'Schedules' },
+  // Only Engineering / S&T / Traction departments see Schedules -- the
+  // Controller does not.
+  { to: '/schedules', label: 'Schedules', onlyForRoles: ['Engineering', 'S&T', 'Traction'] },
   { to: '/conflicts-safety', label: 'Conflicts & Safety' },
-  { to: '/coordination', label: 'Coordination' },
+  // Only the Section Controller sees Coordination.
+  { to: '/coordination', label: 'Coordination', onlyForRoles: ['CONTROLLER'] },
   // Only the Section Controller approves/rejects requests -- Engineering/
   // TRD/S&T raise requests and emergencies, they never approve anything
   // (not even their own).
