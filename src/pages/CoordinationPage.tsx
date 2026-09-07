@@ -122,7 +122,7 @@ export function CoordinationPage() {
               >
                 {query.data.safety_valid ? <CheckCircle2 size={16} /> : <AlertTriangle size={16} />}
                 <span>
-                  {query.data.count} schedules · {query.data.planning_date} · Corridor {query.data.corridor_id} ·{' '}
+                  schedules · {query.data.planning_date} · Corridor {query.data.corridor_id} ·{' '}
                   {query.data.safety_valid ? 'Safety valid' : 'Safety issues detected'}
                 </span>
               </div>
