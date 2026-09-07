@@ -15,7 +15,7 @@ import { RealTask, RealDepartment, Urgency } from '@/shared/types/railsyncReal';
 const CORRIDOR_STATIONS: Record<string, { from: string; to: string }> = {
   C01: { from: 'ST01', to: 'ST02' },
   C02: { from: 'ST02', to: 'ST03' },
-  C03: { from: 'ST03', to: 'ST04' },
+  C03: { from: 'ST03', to: 'ST04' }, 
   C04: { from: 'ST04', to: 'ST05' },
 };
 const CORRIDOR_IDS = Object.keys(CORRIDOR_STATIONS);

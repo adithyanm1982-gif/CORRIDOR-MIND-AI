@@ -4,11 +4,24 @@ import { useSimulation } from '../context/SimulationContext';
 
 interface HeaderProps {
   onOpenInfoModal?: () => void;
+  activeTab?: string;
+  onSelectTab?: (tab: string) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenInfoModal }) => {
+export const Header: React.FC<HeaderProps> = ({
+  onOpenInfoModal,
+  activeTab: controlledTab,
+  onSelectTab
+}) => {
   const { activeConflict, operationalImpacts, metrics } = useSimulation();
-  const [activeTab, setActiveTab] = useState<string>('Simulation');
+  const [internalTab, setInternalTab] = useState<string>('Simulation');
+  const activeTab = controlledTab ?? internalTab;
+
+  // Never render the header on the Simulation page
+  if (activeTab === 'Simulation') {
+    return null;
+  }
+
   const [modalTab, setModalTab] = useState<string | null>(null);
 
   const navItems = [
@@ -27,11 +40,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenInfoModal }) => {
   const unreadCount = (activeConflict && !activeConflict.isResolved ? 1 : 0) + operationalImpacts.length;
 
   const handleTabClick = (tab: string) => {
-    setActiveTab(tab);
-    if (tab !== 'Simulation') {
-      setModalTab(tab);
+    if (onSelectTab) {
+      onSelectTab(tab);
     } else {
-      setModalTab(null);
+      setInternalTab(tab);
+      if (tab !== 'Simulation') {
+        setModalTab(tab);
+      } else {
+        setModalTab(null);
+      }
     }
   };
 
@@ -135,7 +152,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenInfoModal }) => {
               <button
                 onClick={() => {
                   setModalTab(null);
-                  setActiveTab('Simulation');
+                  if (onSelectTab) {
+                    onSelectTab('Simulation');
+                  } else {
+                    setInternalTab('Simulation');
+                  }
                 }}
                 className="px-4 py-1.5 rounded bg-[#13283E] hover:bg-[#1A3450] text-[#38BDF8] border border-[#38BDF8]/40 font-bold transition cursor-pointer"
               >

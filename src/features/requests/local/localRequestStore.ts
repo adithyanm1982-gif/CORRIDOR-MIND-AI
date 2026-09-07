@@ -63,7 +63,7 @@ export const useLocalRequestStore = create<LocalRequestState>((set) => ({
         subsection_id: `${input.corridor_id}-S01`,
         work_area_id: `${input.corridor_id}-WA-${request_id}`,
         from_station: stations.from,
-        to_station: stations.to,
+        to_station: stations.to, 
         asset_id: `AST-${input.department.slice(0, 3).toUpperCase()}-${id}`,
         asset_type: input.asset_type,
         maintenance_type: input.maintenance_type,
