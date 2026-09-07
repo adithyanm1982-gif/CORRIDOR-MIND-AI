@@ -71,7 +71,8 @@ export function DepartmentBlockTimetable({ schedules = [] }: { schedules?: RealS
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-slate-500">{schedules.length} block assignments this week</p>
+        <p className="text-xs text-slate-500"> Block Assignments this week</p>
+
         <div className="inline-flex rounded-md border border-slate-700 overflow-hidden text-[10px]">
           <button
             onClick={() => setFormat('24h')}
