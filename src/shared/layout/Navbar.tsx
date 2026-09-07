@@ -1,3 +1,4 @@
+// src/shared/layout/Navbar.tsx
 import { NavLink } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -17,11 +18,9 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/requests', label: 'Requests' },
-  { to: '/priorities', label: 'Priorities', onlyForRoles: ['CONTROLLER'] }, // Only the Section Controller can view it
-
+  { to: '/priorities', label: 'Priorities' },
   { to: '/planning', label: 'Planning' },
-  { to: '/schedules', label: 'Schedules', onlyForRoles: ['CONTROLLER'] }, // Only the Section Controller can view it
-
+  { to: '/schedules', label: 'Schedules' },
   { to: '/conflicts-safety', label: 'Conflicts & Safety' },
   { to: '/coordination', label: 'Coordination' },
   // Only the Section Controller approves/rejects requests -- Engineering/
@@ -47,7 +46,7 @@ export function Navbar() {
     <nav className="flex items-center justify-between border-b border-slate-800 bg-canvas-panel px-4 py-2.5">
       <div className="flex items-center gap-6">
         <span className="text-sm font-bold tracking-wide text-slate-100">
-          CORRIDOR <span className="text-dept-engineering">MIND AI</span>
+          CORRIDOR<span className="text-dept-engineering"> MIND AI</span>
         </span>
         <div className="flex gap-1 flex-wrap">
           {visibleItems.map((item) => (

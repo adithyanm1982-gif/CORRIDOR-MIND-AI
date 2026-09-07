@@ -1,12 +1,18 @@
+// src/pages/CoordinationPage.tsx
 import { useMemo, useState } from 'react';
 import { useSchedules } from '@/features/schedules/hooks/useSchedules';
 import { ScheduleTable } from '@/features/schedules/components/ScheduleTable';
 import { PlanningDateSelector } from '@/shared/components/ui/PlanningDateSelector';
 import { Card, CardHeader, CardTitle } from '@/shared/components/ui/Card';
-import { MaintenanceHoverPopover } from '@/features/simulation/components/MaintenanceHoverPopover';
-import { REAL_SCHEDULE_ENTRIES } from '@/features/simulation/data/realSchedules';
-import { RealScheduleEntry } from '@/features/simulation/types';
+import { Badge } from '@/shared/components/ui/Badge';
+import { RealScheduleEntry } from '@/shared/types/railsyncReal';
 import { RefreshCw, AlertTriangle, CheckCircle2 } from 'lucide-react';
+
+const DEPARTMENT_COLORS: Record<string, string> = {
+  Engineering: '#38BDF8',
+  'S&T': '#F43F5E',
+  Traction: '#F59E0B',
+};
 
 /**
  * "Coordination" tab per backend spec: opportunities where multiple
@@ -16,10 +22,15 @@ import { RefreshCw, AlertTriangle, CheckCircle2 } from 'lucide-react';
  * endpoint -- coordination_engine.py's joint-block output is presumably
  * embedded inside the schedules/optimization response instead. Until
  * that's confirmed, this page derives real joint-block opportunities
- * client-side from the actual 108-entry schedule dataset (same
- * subsection_id + overlapping [date,start_time,end_time] windows +
- * different departments) -- this is real detection logic against real
- * data, not a mock.
+ * client-side from the same live GET /api/schedules/ feed used in the
+ * panel above (same subsection_id + overlapping [date,start_time,end_time]
+ * windows + different departments) -- this is real detection logic
+ * against real data, not a mock.
+ *
+ * Previously sourced this from a static simulation-folder dataset
+ * (REAL_SCHEDULE_ENTRIES); that folder no longer exists after the
+ * simulation rework, so this now runs against the live `query` result
+ * from useSchedules instead -- one real data source for the whole page.
  */
 
 interface JointGroup {
@@ -68,7 +79,7 @@ export function CoordinationPage() {
   const [corridorId, setCorridorId] = useState('');
 
   const query = useSchedules({ planning_date: planningDate, corridor_id: corridorId || undefined });
-  const jointGroups = useMemo(() => findJointGroups(REAL_SCHEDULE_ENTRIES), []);
+  const jointGroups = useMemo(() => findJointGroups(query.data?.schedules ?? []), [query.data]);
 
   return (
     <div className="space-y-4">
@@ -126,11 +137,13 @@ export function CoordinationPage() {
           <CardTitle>Joint Block Opportunities ({jointGroups.length})</CardTitle>
         </CardHeader>
         <p className="text-xs text-slate-500 mb-3">
-          Detected from the real 108-entry schedule dataset: same block (subsection), overlapping time windows,
-          different departments. This is real analysis of real data — not a mock — but should be cross-checked
-          against the backend's own coordination_engine.py output once that's exposed via an API endpoint.
+          Detected from the live schedule feed above: same block (subsection), overlapping time windows, different
+          departments. This is real analysis of real data — not a mock — but should be cross-checked against the
+          backend's own coordination_engine.py output once that's exposed via an API endpoint.
         </p>
-        {jointGroups.length === 0 ? (
+        {query.isLoading ? (
+          <p className="text-sm text-slate-500 py-6 text-center">Loading joint-block analysis...</p>
+        ) : jointGroups.length === 0 ? (
           <p className="text-sm text-slate-500 py-6 text-center">No overlapping cross-department windows found.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -140,8 +153,17 @@ export function CoordinationPage() {
                   Block {group.subsectionId} · {group.date} · {group.entries.length} departments
                 </p>
                 {group.entries.map((entry) => (
-                  <div key={entry.request_id} className="relative h-40">
-                    <MaintenanceHoverPopover entry={entry} left={0} top={0} />
+                  <div key={entry.request_id} className="rounded-lg border border-slate-800 bg-slate-900/40 p-3">
+                    <div className="flex items-center justify-between">
+                      <Badge color={DEPARTMENT_COLORS[entry.department]}>{entry.department}</Badge>
+                      <span className="text-xs text-slate-500">
+                        {entry.start_time} → {entry.end_time}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 mt-1.5">{entry.maintenance_type}</p>
+                    <p className="text-[10px] text-slate-500">
+                      {entry.from_station} → {entry.to_station}
+                    </p>
                   </div>
                 ))}
               </div>

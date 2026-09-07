@@ -1,0 +1,158 @@
+/* Technical Railway Control Room Grid Background */
+.grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(42, 47, 58, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(42, 47, 58, 0.25) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Railway Track & Sleeper Styling */
+.rail-line {
+  height: 4px;
+  background: linear-gradient(90deg, #1E293B 0%, #475569 50%, #1E293B 100%);
+}
+
+.block-node {
+  border: 1px solid #232936;
+  background: #0E121A;
+  border-radius: 6px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.block-node:hover {
+  border-color: #3B4455;
+}
+
+/* Department Active Auras & Badges */
+.active-eng {
+  border-color: #38BDF8 !important;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.12) 0%, #0E121A 100%) !important;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.25), inset 0 1px 0 rgba(56, 189, 248, 0.4);
+}
+
+.active-trd {
+  border-color: #FBBF24 !important;
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.12) 0%, #0E121A 100%) !important;
+  box-shadow: 0 0 18px rgba(251, 191, 36, 0.25), inset 0 1px 0 rgba(251, 191, 36, 0.4);
+}
+
+.active-snt {
+  border-color: #C084FC !important;
+  background: linear-gradient(180deg, rgba(192, 132, 252, 0.12) 0%, #0E121A 100%) !important;
+  box-shadow: 0 0 18px rgba(192, 132, 252, 0.25), inset 0 1px 0 rgba(192, 132, 252, 0.4);
+}
+
+.active-conflict-node {
+  border-color: #EF4444 !important;
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.18) 0%, #0E121A 100%) !important;
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.45), inset 0 1px 0 rgba(239, 68, 68, 0.6);
+  animation: conflict-pulse 1.8s ease-in-out infinite;
+}
+
+.progress-bar {
+  height: 5px;
+  background: #1A202C;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.timeline-tick {
+  width: 1px;
+  height: 8px;
+  background: #334155;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Custom sleek technical scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #07090E;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #232936;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3B4455;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+@keyframes conflict-pulse {
+  0%, 100% {
+    border-color: #EF4444;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+  }
+  50% {
+    border-color: #F87171;
+    box-shadow: 0 0 28px rgba(239, 68, 68, 0.7);
+  }
+}
+
+@keyframes live-beacon {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+.animate-beacon {
+  animation: live-beacon 1.6s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.15s ease-out forwards;
+}
+
+/* Subtle Shimmer for Active Working Tasks */
+@keyframes work-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.active-work-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: work-shimmer 3s infinite;
+}

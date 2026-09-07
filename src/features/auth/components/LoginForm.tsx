@@ -44,7 +44,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="panel-surface w-full max-w-sm rounded-xl p-6 space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-slate-100">CORRIDOR MIND AI</h1>
+        <h1 className="text-xl font-semibold text-slate-100">Corridor Mind AI Login</h1>
         <p className="text-sm text-slate-400">SIH 26027 — Integrated Block Management</p>
       </div>
 
