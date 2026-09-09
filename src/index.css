@@ -93,3 +93,10 @@ body {
 .light ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
 }
+
+/* Priority breakdown bars (PriorityBreakdownChart) are white by default
+   for dark mode -- invisible against a white light-mode background, so
+   force them black there instead. */
+.light .priority-bar-fill {
+  background-color: #000000 !important;
+}

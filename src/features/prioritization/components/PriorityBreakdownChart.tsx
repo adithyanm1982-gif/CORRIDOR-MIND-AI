@@ -13,7 +13,9 @@ const COMPONENT_LABELS: Record<string, string> = {
 /**
  * Six-factor weighted breakdown matching the real backend priority
  * engine exactly (see features/prioritization/utils/scoreFormatting.ts).
- * Bars are rendered plain white rather than per-factor colors.
+ * Bars are white by default (dark mode); the `priority-bar-fill` class
+ * is overridden to black in light mode via index.css, since a plain
+ * white bar is invisible against a white page background.
  */
 export function PriorityBreakdownChart({ input }: { input: RealPriorityInputs }) {
   const breakdown = realPriorityBreakdown(input);
@@ -30,7 +32,7 @@ export function PriorityBreakdownChart({ input }: { input: RealPriorityInputs })
           </div>
           <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
             <div
-              className="h-full rounded-full"
+              className="h-full rounded-full priority-bar-fill"
               style={{ width: `${(value / max) * 100}%`, backgroundColor: '#FFFFFF' }}
             />
           </div>
