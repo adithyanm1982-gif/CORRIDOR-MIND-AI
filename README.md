@@ -10,38 +10,38 @@
 
 ## 📋 Overview
 
-**CorridorMind AI** is an end-to-end intelligent railway maintenance block planning system developed for **Smart India Hackathon 2026 (Problem Statement ID: SIH26027)** by **Team Visionary Coders_1 (Team ID: 160194)**[cite: 1, 2]. 
+**CorridorMind AI** is an end-to-end intelligent railway maintenance block planning system developed for **Smart India Hackathon 2026 (Problem Statement ID: SIH26027)** by **Team Visionary Coders_1 (Team ID: 160194)**
 
-It unifies fragmented maintenance requests across railway departments into a single, conflict-free, safety-validated 7-day master schedule—maximizing track and asset availability while keeping human controllers firmly in control[cite: 2, 3, 5].
+It unifies fragmented maintenance requests across railway departments into a single, conflict-free, safety-validated 7-day master schedule—maximizing track and asset availability while keeping human controllers firmly in control.
 
 ---
 
 ## ❗ The Problem
 
 In Indian Railways, **Engineering**, **Traction Distribution (TRD)**, and **Signal & Telecommunication (S&T)** departments currently raise maintenance block requests independently without a shared view of corridor demand[cite: 2]. This siloed approach causes:
-* Difficulty in prioritizing critical safety repairs[cite: 2, 3]
-* Missed opportunities for overlapping, coordinated maintenance work[cite: 2]
-* Underutilized maintenance blocks and idle machinery[cite: 2, 6]
-* Scheduling clashes, maintenance backlogs, train delays, and reduced operational asset availability[cite: 2, 6]
+* Difficulty in prioritizing critical safety repairs
+* Missed opportunities for overlapping, coordinated maintenance work
+* Underutilized maintenance blocks and idle machinery
+* Scheduling clashes, maintenance backlogs, train delays, and reduced operational asset availability
 
 ---
 
 ## 💡 The Solution
 
-CorridorMind AI transforms fragmented spreadsheet reconciliation into an automated, explainable pipeline[cite: 2, 4]:
+CorridorMind AI transforms fragmented spreadsheet reconciliation into an automated, explainable pipeline
 
-> **UNIFY → PRIORITIZE → COORDINATE → OPTIMIZE → VALIDATE → APPROVE**[cite: 2]
+> **UNIFY → PRIORITIZE → COORDINATE → OPTIMIZE → VALIDATE → APPROVE**
 
-1. **Unified Railway Planning Intelligence:** Consolidates departmental maintenance requests, assets, corridor topology, and block availability into a single-window planning view[cite: 2].
-2. **AI-Driven Priority & Feasible Scheduling:** Uses an **XGBoost** priority engine and constraint-based candidate schedule generation to rank critical work and identify feasible maintenance windows[cite: 2, 3].
-3. **Cross-Department Block Optimization:** Uses **LangGraph** coordination/optimization agents alongside **Google OR-Tools CP-SAT** to pair compatible Engineering, TRD, and S&T tasks into shared, high-efficiency blocks[cite: 2, 3].
-4. **Safe, Explainable & Human-Controlled Planning:** Runs deterministic safety rule checks and corridor simulations before human approval, backed by a **RAG-based Explainability Agent** and a **WhatsApp approval workflow**[cite: 2, 3, 4].
+1. **Unified Railway Planning Intelligence:** Consolidates departmental maintenance requests, assets, corridor topology, and block availability into a single-window planning view
+2. **AI-Driven Priority & Feasible Scheduling:** Uses an **XGBoost** priority engine and constraint-based candidate schedule generation to rank critical work and identify feasible maintenance windows.
+3. **Cross-Department Block Optimization:** Uses **LangGraph** coordination/optimization agents alongside **Google OR-Tools CP-SAT** to pair compatible Engineering, TRD, and S&T tasks into shared, high-efficiency blocks.
+4. **Safe, Explainable & Human-Controlled Planning:** Runs deterministic safety rule checks and corridor simulations before human approval, backed by a **RAG-based Explainability Agent** and a **WhatsApp approval workflow**.
 
 ---
 
 ## 🏗️ System Architecture & Technical Pipeline
 
-CorridorMind AI operates across an 11-step, four-layer architecture[cite: 3]:
+CorridorMind AI operates across an 11-step, four-layer architecture:
 
 ```text
 [ TMS / SMMS / TDMS / COA ] 
