@@ -1,145 +1,162 @@
-# RailSync Frontend — SIH 26027 (Complete Delivery)
+# 🚆 CorridorMind AI
 
-React + Vite + TypeScript frontend for the RailSync integrated railway
-maintenance block management system. 105 source files.
+**Smarter Planning and Zero Conflicts — AI-Powered Automatic Block Planning to Maximize Asset Availability for Train Operations on Indian Railways**
 
-## Quick start
+[![Smart India Hackathon 2026](https://img.shields.io/badge/SIH%202026-SIH26027-blue.svg)](#)
+[![Team](https://img.shields.io/badge/Team-Visionary%20Coders__1%20(ID%3A%20160194)-green.svg)](#)
+[![Domain](https://img.shields.io/badge/Theme-Transportation%20%26%20Logistics-orange.svg)](#)
 
-```bash
-npm install
-npm run dev
+---
+
+## 📋 Overview
+
+**CorridorMind AI** is an end-to-end intelligent railway maintenance block planning system developed for **Smart India Hackathon 2026 (Problem Statement ID: SIH26027)** by **Team Visionary Coders_1 (Team ID: 160194)**[cite: 1, 2]. 
+
+It unifies fragmented maintenance requests across railway departments into a single, conflict-free, safety-validated 7-day master schedule—maximizing track and asset availability while keeping human controllers firmly in control[cite: 2, 3, 5].
+
+---
+
+## ❗ The Problem
+
+In Indian Railways, **Engineering**, **Traction Distribution (TRD)**, and **Signal & Telecommunication (S&T)** departments currently raise maintenance block requests independently without a shared view of corridor demand[cite: 2]. This siloed approach causes:
+* Difficulty in prioritizing critical safety repairs[cite: 2, 3]
+* Missed opportunities for overlapping, coordinated maintenance work[cite: 2]
+* Underutilized maintenance blocks and idle machinery[cite: 2, 6]
+* Scheduling clashes, maintenance backlogs, train delays, and reduced operational asset availability[cite: 2, 6]
+
+---
+
+## 💡 The Solution
+
+CorridorMind AI transforms fragmented spreadsheet reconciliation into an automated, explainable pipeline[cite: 2, 4]:
+
+> **UNIFY → PRIORITIZE → COORDINATE → OPTIMIZE → VALIDATE → APPROVE**[cite: 2]
+
+1. **Unified Railway Planning Intelligence:** Consolidates departmental maintenance requests, assets, corridor topology, and block availability into a single-window planning view[cite: 2].
+2. **AI-Driven Priority & Feasible Scheduling:** Uses an **XGBoost** priority engine and constraint-based candidate schedule generation to rank critical work and identify feasible maintenance windows[cite: 2, 3].
+3. **Cross-Department Block Optimization:** Uses **LangGraph** coordination/optimization agents alongside **Google OR-Tools CP-SAT** to pair compatible Engineering, TRD, and S&T tasks into shared, high-efficiency blocks[cite: 2, 3].
+4. **Safe, Explainable & Human-Controlled Planning:** Runs deterministic safety rule checks and corridor simulations before human approval, backed by a **RAG-based Explainability Agent** and a **WhatsApp approval workflow**[cite: 2, 3, 4].
+
+---
+
+## 🏗️ System Architecture & Technical Pipeline
+
+CorridorMind AI operates across an 11-step, four-layer architecture[cite: 3]:
+
+```text
+[ TMS / SMMS / TDMS / COA ] 
+       │
+       ▼ (1-2) Data Foundation & Unified Data Model
+[ XGBoost Priority Engine ] ──► Ranks requests across 6 risk & criticality factors
+       │
+       ▼ (3-4) Candidate Schedule Generation
+[ LangGraph Coordination Agent ] ──► Discovers compatible Engineering, TRD & S&T work
+       │
+       ▼ (5-6) Global Constraint Solving
+[ OR-Tools CP-SAT Optimization Agent ] ──► Selects optimal conflict-free schedule
+       │
+       ▼ (7-9) Trust & Validation
+[ Deterministic Safety Validator ] + [ Corridor Simulator ] + [ RAG Explainability Agent ]
+       │
+       ▼ (10-11) Human-in-the-Loop Control
+[ Controller Dashboard & WhatsApp Bot ] ──► Final Review, Modification & Audit-Logged Approval
+
 ```
 
-Runs on `http://localhost:5173`. Defaults to calling the deployed
-backend at `https://railway-backend-w92b.onrender.com` — override with
-`VITE_API_BASE_URL` in a `.env` file (copy `.env.example`) to point at
-a local FastAPI instance instead.
+### Pipeline Breakdown
 
-Log in with any name and pick a department/role (Engineering, S&T,
-Traction, or Section Controller) — auth is a mock client-side flow,
-since the backend has no auth endpoints. Session persists correctly
-across refreshes (see fixes below).
+* **Data Foundation (Steps 1–2):** Ingests data from existing railway systems (`TMS`, `TDMS`, `SMMS`, `COA`, and block records) via secure connectors with schema mapping, normalization, validation, and role-based access control.
 
-## This backend zip vs. the previous one
 
-I diffed every file in this backend zip against the one from earlier
-in our conversation: **every API route file (`app/api/*.py`) is
-byte-identical**, and the priority-scoring formula
-(`priority_engine.py`) is byte-identical too. I also confirmed all 4
-new JSON samples match the exact same field schemas already built
-into `shared/types/railsyncReal.ts`. The new files in this zip
-(`decision_engine.py`, `explanation_engine.py`,
-`train_conflict_checker.py`, `orchestration/planning_service.py`) are
-a real Phase-3 decision/explanation layer, but they aren't wired into
-any of the 9 REST endpoints yet — only two of their computed fields
-(`scheduled_requests`, `unscheduled_requests`) reach the API via
-`decision_summary`, and both are already typed and displayed on the
-Dashboard tab.
+* **AI Decision Engine (Steps 3–6):**
+* **Priority Engine:** Scores maintenance requests using **XGBoost** across six factors: safety risk, criticality, operational impact, severity, urgency, and overdue status.
 
-**Net effect:** nothing about the frontend needed to change to match
-this backend — it already fetches and displays every real field
-correctly. What follows is the complete, freshly verified project.
 
-## Every previously-reported issue — confirmed fixed in this build
+* **Candidate Generation:** Maps prioritized requests to feasible block and time windows based on corridor location, duration, and operational constraints.
 
-1. **Login on every refresh** — auth state now hydrates synchronously
-   inside `authStore`'s `create()` call, not in a `useEffect`. There's
-   no more race between the route guard's first render and session
-   restoration.
-2. **Duplicate "Pending"/"Approval"** — Approvals tab shows one clear
-   status (Awaiting Approval → Approved/Rejected), not two raw backend
-   fields that mean the same thing.
-3. **Controller can't raise emergencies** — hidden from their nav, and
-   the `/emergency` route itself redirects Controllers to `/approvals`
-   even via direct URL.
-4. **Hover popups for both trains and maintenance blocks** — both
-   fire correctly off the same hit-test; the train popup now shows
-   live computed speed instead of a static top-speed value.
-5. **Fixed, properly-sized simulation zoom** — computes a fit-to-window
-   zoom once when the canvas mounts (using its actual measured size),
-   remembers it as "home" for the Reset button. Zoom only ever changes
-   via explicit user action afterward.
-6. **Data fetching/display correctness across every tab** — every
-   endpoint response is typed exactly against the real backend source
-   (not guessed), department values match the real strings
-   (`Engineering`/`S&T`/`Traction`), and every live-data page has
-   consistent loading/error states.
 
-Verified before packaging: `tsc --noEmit` clean, `vite build` succeeds
-(437KB / 125KB gzipped).
+* **Coordination & Optimization Agents:** **LangGraph** agents group compatible cross-departmental activities and pass candidates to **OR-Tools CP-SAT** to compute a globally optimal, conflict-free schedule.
 
-## Structure
 
-Feature-sliced under `src/features/`, one folder per backend domain:
-`auth`, `requests`, `prioritization`, `optimization`, `schedules`,
-`conflicts`, `approvals`, `emergency`, `dataassets`, `simulation`.
-Each owns its `api/` (axios calls against real typed responses),
-`hooks/` (React Query), and `components/`. Pages in `src/pages/` are
-thin — they compose feature components and own only page-level state.
 
-### Simulation (`src/features/simulation/`)
 
-Built to match the reference concept art and criteria exactly:
+* **Trust & Validation (Steps 7–9):**
+* **Independent Safety Validator:** Deterministic rule engine verifying zero overlapping windows, valid assignments, and strict safety-buffer compliance before human review.
 
-- **Real topology**: 5 stations (ST01–ST05) chained by 4 real
-  corridors (C01–C04), each split into 4 real **Blocks** — your actual
-  `subsection_id`s (`C01-S02` etc.) — rendered as always-visible
-  dashed divider lines.
-- **Sub-Blocks**: each Block further divides into 4 invisible
-  finer track-circuit divisions, only becoming visible/labeled once
-  zoomed in past ~3.6x.
-- **Real maintenance overlays**: the embedded 108-entry schedule
-  dataset (`data/realSchedules.ts`) drives every glowing block
-  highlight, filtered live against whichever real date/time the sim
-  clock is on — hover shows the actual record (department, priority
-  score, safety buffer, etc).
-- **7-day free navigation**: day tabs jump straight to any of the 7
-  real dates (Thu 2026-08-27 → Wed 2026-09-02), a continuous scrubber
-  covers the whole week, and play/pause runs at 1x–180x speed — all
-  independent of each other.
-- **Fixed, fit-to-window zoom** on open (see fix #5 above); junction
-  fan-outs with loop/siding stubs at each station; 3-tier LOD (macro →
-  mid → micro) with sensor-readout HUD chips at micro zoom, styled
-  after the reference art's Station A close-up.
-- Trains are synthetic (no live train-position feed exists in any of
-  the backend data — the schedule entries are maintenance blocks, and
-  `expected_train_count` is 0/`UNKNOWN` throughout). Swap
-  `TrainMotionCalculator.generateFleet()` for a real feed later
-  without touching any renderer.
 
-## Backend integration — all 9 real endpoints, fully typed
+* **Corridor Simulation:** Visualizes block occupancy, train movements, and departmental activities to test plan feasibility prior to commitment.
 
-| Endpoint | Method | Tab |
-|---|---|---|
-| `/api/dashboard/summary` | GET | Dashboard |
-| `/api/tasks/`, `/api/tasks/{id}` | GET | Requests, Approvals |
-| `/api/priorities/`, `/api/priorities/{id}` | GET | Priorities |
-| `/api/optimization/run` | POST | Planning |
-| `/api/schedules/`, `/api/schedules/{id}` | GET | Schedules |
-| `/api/conflicts/` | GET | Conflicts & Safety |
-| `/api/data/stats` | GET | Data/Assets |
-| `/api/approvals/` | POST | Approvals |
-| `/api/emergency/evaluate` | POST | Emergency |
 
-Every response type in `shared/types/railsyncReal.ts` is confirmed
-against the real backend source, not inferred. The priority formula in
-`features/prioritization/utils/scoreFormatting.ts` is an exact replica
-of `priority_engine.py`: `Safety Risk×0.25 + Criticality×0.20 +
-Operational Impact×0.20 + Severity×0.15 + Urgency×0.10 + Overdue×0.10`,
-each normalized 0–100, classified Critical(≥75)/High(≥55)/Medium(≥35)/Low.
+* **Explainability Agent:** **RAG-powered** reasoning layer that retrieves planning rules and context to explain why specific requests were prioritized, merged, or deferred.
 
-`/api/tasks/` is read-only — there's no backend route to create a new
-request, so the Requests tab is a live browse/filter view, not a
-submission form.
 
-## Known limitations, honestly stated
 
-- Coordination tab has no dedicated backend endpoint; it derives real
-  joint-block opportunities client-side from the schedule dataset
-  (same block, overlapping time window, different departments) —
-  genuine analysis of real data, not a mock, but should be
-  cross-checked against `coordination_engine.py`'s own output once
-  that's exposed via an API route.
-- Render's free tier cold-starts after inactivity — first request can
-  take up to ~30s; every live-data page's loading state says so
-  explicitly rather than looking stuck.
+
+* **Human Control & Deployment (Steps 10–11):** Single-screen web dashboard and **WhatsApp Chatbot** enabling officials across Engineering, TRD, and S&T to review, override, and approve plans with an immutable audit trail.
+
+
+
+---
+
+## ✨ Key Features
+
+* **Multi-Department Intelligence:** Single source of truth unifying Engineering, TRD, and S&T requests.
+
+
+* **Shared-Block Discovery:** Automatically merges compatible cross-departmental work into single maintenance windows.
+
+
+* **Agentic + Constraint Optimization:** Combines LLM agentic workflows (`LangGraph`) with exact mathematical optimization (`OR-Tools CP-SAT`).
+
+
+* **Safety-First Guardrails:** The optimizer is never the final authority—every schedule passes deterministic safety checks and human approval.
+
+
+* **Interactive Pre-Approval Simulation:** Visualizes corridor impact and resource utilization before blocks are granted.
+
+
+* **WhatsApp Chatbot Integration:** Streamlines rapid multi-department review, modifications, and approvals on mobile.
+
+
+* **CRIS / BDMS Ready:** Built on a locked data contract for seamless integration with existing railway systems and national-level scaling without pipeline redesign.
+
+
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technologies |
+| --- | --- |
+| **Machine Learning & Scoring** | Python, XGBoost |
+| **Agentic Orchestration** | LangGraph |
+| **Mathematical Optimization** | Google OR-Tools (CP-SAT Solver) |
+| **Explainability & Knowledge** | Retrieval-Augmented Generation (RAG), Vector/Relational Database |
+| **Data Integration & Backend** | REST APIs, Locked Data Contracts (`TMS`, `SMMS`, `TDMS`, `COA` schemas) |
+| **Frontend & Simulation** | Interactive Planning Dashboard, Corridor Occupancy Simulator |
+| **Notifications & Approvals** | WhatsApp Business / Chatbot API |
+
+---
+
+## 📊 Impact & Benefits
+
+* **Unified 7-Day Master Schedule:** Eliminates siloed requests and manual spreadsheet reconciliation across departments.
+
+
+* **Proactive Conflict Resolution:** Catches corridor and safety-buffer clashes prior to block execution.
+
+
+* **Maximized Asset Availability:** Aligns with Indian Railways' **Rolling Block Programme (RBP)** to reduce block refusals, increase asset earning hours, and minimize machine idle time.
+
+
+* **Economic & Operational Value:** Helps curb train delays (estimated to cost ₹14,800–19,900 crore annually in lost passenger time; even a 10% delay reduction saves ₹1,500–2,000 crore/year).
+
+
+* **Immutable Accountability:** Logs every approval, rejection, and manual override for full auditability and safety governance.
+
+
+## 👥 Team — Visionary Coders_1
+
+* **Smart India Hackathon 2026** | **Team ID:** `160194` | **Problem Statement:** `SIH26027`
+
+```
